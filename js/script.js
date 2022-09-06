@@ -229,4 +229,63 @@ window.addEventListener('DOMContentLoaded', () => {
     ).renderCard();
 
 
+    //  Forms - принимаем данные пользователя с формы обр связи
+        // создаем в корне проекта файл для back-end'a - server.php
+        // исп-ем для отправки объект XMLHttpRequest
+        // пробуем для отправки данных 2 разных формата объект FormData и JSON
+
+        const forms = document.querySelectorAll('form');  //  получаем все формы обр связи
+
+        const message = {                  // сообщение для информирования пользователя о статусе отправки запроса
+            loading: 'Загрузка',
+            success: 'Спасибо, скоро мы с вами свяжемся',
+            failure: 'Что то пошло не так...'
+        };
+
+        //  применяем ф-цию постинга данных из ФОС ко всем формам с помощью перебора форм
+        forms.forEach(item => {
+            postData(item);
+        });
+
+        function postData(form) {                     // ф-ция отвечает за постинг данных
+            form.addEventListener('submit', (e) => {  //  submit срабатывает при отправке ФОС
+                e.preventDefault();                   //  отменяем перезагрузку стр при отправке
+    
+                //  помещаем на страницу статус отправки запроса на сервер в виде картинки (для наглядного представления пользовотелю) 
+                const statusMessage = document.createElement('div');  //  создаем div блок
+                statusMessage.classList.add('status');
+                statusMessage.textContent = message.loading;          //  берем из объекта message сообщ ЗАГРУЗКА
+                form.append(statusMessage);                           //  и выводим под ФОС информируя пользователя о статусе отрпавки
+
+                
+                const request = new XMLHttpRequest();  // это API, который предоставляет клиенту функциональность для обмена данными между клиентом и сервером
+                request.open('POST', 'server.php');  //  настраиваем - POST отправку на сервер, второй арг это путь к серверу
+    
+                // request.setRequestHeader('Content-type', 'multipart/form-data');  //  настройка заголовка для объекта FormData
+                // связка XMLHttpRequest и FormData не работает с указанием заголовка, поэтому заголовок не пишем !!!
+    
+                const formData = new FormData(form);  // Объект FormData позволяет создать набор пар ключ/значение и передать их. На input'ах должен быть атрибут name!!!
+
+    
+                request.send(formData);  //  отправляем к серверу Объект FormData через XMLHttpRequest()
+
+
+                //  слушаем событие load от XMLHttpRequest()
+                request.addEventListener('load', () => {              //  отслеживаем конечную загрузку запроса
+                    if (request.status === 200) {                     //  если запрос прошел статус ОК(200)
+                        console.log(request.response);                //  выведем в консоль объект с данными из ФОС
+                        statusMessage.textContent = message.success;  //  перезаписываем переменную из объекта message и сообщ польз об успешной отправке
+                        form.reset();                                 //  очистка ФОС от введенных данных
+                        setTimeout(() => {
+                            statusMessage.remove();                   //  через 4 сек очищаем сообщ польз об успешной отправке
+                        }, 4000);
+                    } else {                                          //  негативный сценарий если запрос НЕ прошел статус ОК(200)
+                        statusMessage.textContent = message.success;  //  перезаписываем переменную из объекта message и сообщ польз о проблеме в отправке
+                    }
+                });
+            });
+        }
+    
+
+
 });
