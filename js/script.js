@@ -238,7 +238,7 @@ window.addEventListener('DOMContentLoaded', () => {
         const forms = document.querySelectorAll('form');  //  получаем все формы обр связи
 
         const message = {                  // сообщение для информирования пользователя о статусе отправки запроса
-            loading: 'Загрузка',
+            loading: 'img/form/spinner.svg',              //  исп-ем картинку спиннер для отображения загрузки
             success: 'Спасибо, скоро мы с вами свяжемся',
             failure: 'Что то пошло не так...'
         };
@@ -253,10 +253,15 @@ window.addEventListener('DOMContentLoaded', () => {
                 e.preventDefault();                   //  отменяем перезагрузку стр при отправке
     
                 //  помещаем на страницу статус отправки запроса на сервер в виде картинки (для наглядного представления пользовотелю) 
-                const statusMessage = document.createElement('div');  //  создаем div блок
-                statusMessage.classList.add('status');
-                statusMessage.textContent = message.loading;          //  берем из объекта message сообщ ЗАГРУЗКА
-                form.append(statusMessage);                           //  и выводим под ФОС информируя пользователя о статусе отправки
+                const statusMessage = document.createElement('img');  //  создаем тег img
+                statusMessage.src = message.loading;                  //  подставляем атрибут src со ссылкой на картинку из объекта message
+                statusMessage.style.cssText =                         //  установим css стили к спиннеру
+                `
+                    display: block;
+                    margin: 0 auto;
+                `;
+                
+                form.insertAdjacentElement('afterend', statusMessage);  //  и выводим под ФОС информируя пользователя о статусе отправки
 
                 
                 const request = new XMLHttpRequest();  // это API, который предоставляет клиенту функциональность для обмена данными между клиентом и сервером
@@ -285,18 +290,42 @@ window.addEventListener('DOMContentLoaded', () => {
                 request.addEventListener('load', () => {              //  отслеживаем конечную загрузку запроса
                     if (request.status === 200) {                     //  если запрос прошел статус ОК(200)
                         console.log(request.response);                //  выведем в консоль объект с данными из ФОС
-                        statusMessage.textContent = message.success;  //  перезаписываем переменную из объекта message и сообщ польз об успешной отправке
+                        showThanksModal(message.success);             //  вызываем ф-цию показа окна благодарности
                         form.reset();                                 //  очистка ФОС от введенных данных
-                        setTimeout(() => {
-                            statusMessage.remove();                   //  через 4 сек очищаем сообщ польз об успешной отправке
-                        }, 4000);
+                        statusMessage.remove();                       //  очищаем сообщ польз о загрузке (спиннер)
                     } else {                                          //  негативный сценарий если запрос НЕ прошел статус ОК(200)
-                        statusMessage.textContent = message.success;  //  перезаписываем переменную из объекта message и сообщ польз о проблеме в отправке
+                        showThanksModal(message.failure);             //  вызываем ф-цию показа окна с сообщ польз о проблеме в отправке
                     }
                 });
             });
         }
     
 
+        //  создаем окно благодарности (после отправки данных)
+
+        function showThanksModal(message) {
+            const prevModalDialog = document.querySelector('.modal__dialog');  //  получаем существующее мод окно в переменную
+    
+            prevModalDialog.classList.add('hide');                             //  скрывает предыдущий контент (ФОС, инпуты)
+            openModal();                                                       //  открывает мод окно
+    
+            const thanksModal = document.createElement('div');                 //  создаем обертку
+            thanksModal.classList.add('modal__dialog');                        //  присваиваем тот же класс что был у ФОС
+            thanksModal.innerHTML =                                            //  вставляем контент: крестик для закрытия и сообщение
+            `
+                <div class="modal__content">
+                    <div class="modal__close" data-close>&times;</div>
+                    <div class="modal__title">${message}</div>
+                </div>
+            `;
+    
+            document.querySelector('.modal').append(thanksModal);   //  получаем мод окно и сразу же вставляем в него контент
+            setTimeout(() => {                                      //  ф-ция для очистки мод окна через 4сек
+                thanksModal.remove();                               //  удаляем контент с сообщением пользователю
+                prevModalDialog.classList.add('show');              //  показываем предыдущий контент т.е. ФОС с инпуами
+                prevModalDialog.classList.remove('hide');           //  удаляем класс скрытия ФОС примененный на 306 строке
+                closeModal();                                       //  закрываем мод окно чтобы всё это обновление контента не видел пользователь
+            }, 2000);
+        }
 
 });
