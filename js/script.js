@@ -233,6 +233,7 @@ window.addEventListener('DOMContentLoaded', () => {
         // создаем в корне проекта файл для back-end'a - server.php
         // исп-ем для отправки объект XMLHttpRequest
         // пробуем для отправки данных 2 разных формата объект FormData и JSON
+        // для отправки JSON в server.php необходимо добавить: $_POST = json_decode(file_get_contents("php://input"), true);
 
         const forms = document.querySelectorAll('form');  //  получаем все формы обр связи
 
@@ -255,7 +256,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 const statusMessage = document.createElement('div');  //  создаем div блок
                 statusMessage.classList.add('status');
                 statusMessage.textContent = message.loading;          //  берем из объекта message сообщ ЗАГРУЗКА
-                form.append(statusMessage);                           //  и выводим под ФОС информируя пользователя о статусе отрпавки
+                form.append(statusMessage);                           //  и выводим под ФОС информируя пользователя о статусе отправки
 
                 
                 const request = new XMLHttpRequest();  // это API, который предоставляет клиенту функциональность для обмена данными между клиентом и сервером
@@ -263,11 +264,21 @@ window.addEventListener('DOMContentLoaded', () => {
     
                 // request.setRequestHeader('Content-type', 'multipart/form-data');  //  настройка заголовка для объекта FormData
                 // связка XMLHttpRequest и FormData не работает с указанием заголовка, поэтому заголовок не пишем !!!
+
+                request.setRequestHeader('Content-type', 'application/json');  //  настройка заголовка для объекта JSON
     
                 const formData = new FormData(form);  // Объект FormData позволяет создать набор пар ключ/значение и передать их. На input'ах должен быть атрибут name!!!
 
-    
-                request.send(formData);  //  отправляем к серверу Объект FormData через XMLHttpRequest()
+                //  создаем объект и помещаем в него данные из formData чтобы потом трансформировать их в JSON
+                const object = {};
+                formData.forEach(function(value, key){
+                    object[key] = value;
+                });
+
+                const json = JSON.stringify(object);  //  трансформирует обычный объект в JSON
+                request.send(json);  //  отправляем к серверу Объект JSON через XMLHttpRequest()
+
+                // request.send(formData);  //  отправляем к серверу Объект FormData через XMLHttpRequest()
 
 
                 //  слушаем событие load от XMLHttpRequest()
