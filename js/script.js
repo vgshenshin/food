@@ -275,12 +275,12 @@ window.addEventListener('DOMContentLoaded', () => {
                 const formData = new FormData(form);  // Объект FormData позволяет создать набор пар ключ/значение и передать их. На input'ах должен быть атрибут name!!!
 
                 //  создаем объект и помещаем в него данные из formData чтобы потом трансформировать их в JSON
-                // const object = {};
-                // formData.forEach(function(value, key){
-                //     object[key] = value;
-                // });
+                const object = {};
+                formData.forEach(function(value, key){
+                    object[key] = value;
+                });
 
-                // const json = JSON.stringify(object);  //  трансформирует обычный объект в JSON
+                const json = JSON.stringify(object);  //  трансформирует обычный объект в JSON
                 // request.send(json);  //  отправляем к серверу Объект JSON через XMLHttpRequest()
 
                 // request.send(formData);  //  отправляем к серверу Объект FormData через XMLHttpRequest()
@@ -288,11 +288,31 @@ window.addEventListener('DOMContentLoaded', () => {
                 //-------------------------fetch API------------------------------------------------------------------
                 // постим данные с ФОС на сервер с помощью fetch API
                 // 1. В виде FormData
-                fetch('server.php', {           //  в файле server.php не забудь удалить строку с json_decode
+                // fetch('server.php', {           //  в файле server.php не забудь удалить строку с json_decode
+                //     method: "POST",
+                //     body: formData
+                // })
+                // .then(data => data.text())      //  трансформирует formData в текст чтобы вывести в консоль
+                // .then(data => {
+                //     console.log(data);
+                //     showThanksModal(message.success);
+                // }).catch(() => {
+                //     showThanksModal(message.failure);
+                // }).finally(() => {
+                //     form.reset();
+                //     statusMessage.remove();
+                // });
+
+                
+                // 2. В виде JSON
+                fetch('server.php', {           //  в файле server.php не забудь прописать строку с json_decode
                     method: "POST",
-                    body: formData
+                    headers: {
+                        'Content-type': 'application/json'
+                    },
+                    body: json                  //  json - это переменная в к-ой хранятся данный с ФОС в JSON формате(стр.278-283) 
                 })
-                .then(data => data.text())      //  трансформирует formData в текст чтобы вывести в консоль
+                .then(data => data.text())      //  трансформирует JSON в текст чтобы вывести в консоль
                 .then(data => {
                     console.log(data);
                     showThanksModal(message.success);
