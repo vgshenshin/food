@@ -264,39 +264,59 @@ window.addEventListener('DOMContentLoaded', () => {
                 form.insertAdjacentElement('afterend', statusMessage);  //  и выводим под ФОС информируя пользователя о статусе отправки
 
                 
-                const request = new XMLHttpRequest();  // это API, который предоставляет клиенту функциональность для обмена данными между клиентом и сервером
-                request.open('POST', 'server.php');  //  настраиваем - POST отправку на сервер, второй арг это путь к серверу
+                // const request = new XMLHttpRequest();  // это API, который предоставляет клиенту функциональность для обмена данными между клиентом и сервером
+                // request.open('POST', 'server.php');  //  настраиваем - POST отправку на сервер, второй арг это путь к серверу
     
                 // request.setRequestHeader('Content-type', 'multipart/form-data');  //  настройка заголовка для объекта FormData
                 // связка XMLHttpRequest и FormData не работает с указанием заголовка, поэтому заголовок не пишем !!!
 
-                request.setRequestHeader('Content-type', 'application/json');  //  настройка заголовка для объекта JSON
+                // request.setRequestHeader('Content-type', 'application/json');  //  настройка заголовка для объекта JSON
     
                 const formData = new FormData(form);  // Объект FormData позволяет создать набор пар ключ/значение и передать их. На input'ах должен быть атрибут name!!!
 
                 //  создаем объект и помещаем в него данные из formData чтобы потом трансформировать их в JSON
-                const object = {};
-                formData.forEach(function(value, key){
-                    object[key] = value;
-                });
+                // const object = {};
+                // formData.forEach(function(value, key){
+                //     object[key] = value;
+                // });
 
-                const json = JSON.stringify(object);  //  трансформирует обычный объект в JSON
-                request.send(json);  //  отправляем к серверу Объект JSON через XMLHttpRequest()
+                // const json = JSON.stringify(object);  //  трансформирует обычный объект в JSON
+                // request.send(json);  //  отправляем к серверу Объект JSON через XMLHttpRequest()
 
                 // request.send(formData);  //  отправляем к серверу Объект FormData через XMLHttpRequest()
 
+                //-------------------------fetch API------------------------------------------------------------------
+                // постим данные с ФОС на сервер с помощью fetch API
+                // 1. В виде FormData
+                fetch('server.php', {           //  в файле server.php не забудь удалить строку с json_decode
+                    method: "POST",
+                    body: formData
+                })
+                .then(data => data.text())      //  трансформирует formData в текст чтобы вывести в консоль
+                .then(data => {
+                    console.log(data);
+                    showThanksModal(message.success);
+                }).catch(() => {
+                    showThanksModal(message.failure);
+                }).finally(() => {
+                    form.reset();
+                    statusMessage.remove();
+                });
+
+
+                //--------------------------------------------------------------------------------------------
 
                 //  слушаем событие load от XMLHttpRequest()
-                request.addEventListener('load', () => {              //  отслеживаем конечную загрузку запроса
-                    if (request.status === 200) {                     //  если запрос прошел статус ОК(200)
-                        console.log(request.response);                //  выведем в консоль объект с данными из ФОС
-                        showThanksModal(message.success);             //  вызываем ф-цию показа окна благодарности
-                        form.reset();                                 //  очистка ФОС от введенных данных
-                        statusMessage.remove();                       //  очищаем сообщ польз о загрузке (спиннер)
-                    } else {                                          //  негативный сценарий если запрос НЕ прошел статус ОК(200)
-                        showThanksModal(message.failure);             //  вызываем ф-цию показа окна с сообщ польз о проблеме в отправке
-                    }
-                });
+                // request.addEventListener('load', () => {              //  отслеживаем конечную загрузку запроса
+                //     if (request.status === 200) {                     //  если запрос прошел статус ОК(200)
+                //         console.log(request.response);                //  выведем в консоль объект с данными из ФОС
+                //         showThanksModal(message.success);             //  вызываем ф-цию показа окна благодарности
+                //         form.reset();                                 //  очистка ФОС от введенных данных
+                //         statusMessage.remove();                       //  очищаем сообщ польз о загрузке (спиннер)
+                //     } else {                                          //  негативный сценарий если запрос НЕ прошел статус ОК(200)
+                //         showThanksModal(message.failure);             //  вызываем ф-цию показа окна с сообщ польз о проблеме в отправке
+                //     }
+                // });
             });
         }
     
