@@ -197,37 +197,28 @@ window.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    //  ф-ция отвечающая за функционал сервера GET запросы
+    /*создается запрос к серверу (асинхронный код) поэтому применяем async/await
+    теперь переменная res будет ждать ответа (промиса) от fetch и только после этого
+    в нее запишется результат запроса*/
+    const getResource = async (url) => {
+        const res = await fetch(url);              
 
-    new MenuCard(
-        'img/tabs/vegy.jpg', 
-        'vegy', 
-        'Меню "Фитнес"', 
-        'Меню "Фитнес" - это новый подход к приготовлению блюд: больше свежих овощей и фруктов. Продукт активных и здоровых людей. Это абсолютно новый продукт с оптимальной ценой и высоким качеством!', 
-        9, 
-        '.menu .container',
-        'menu__item'
-    ).renderCard();
+        if(!res.ok) {                              //  проверяем на ошибку в запросе с помощью св-в промиса
+            // создаем объект ошибки и throw - это выкинуть ее в консоль
+            throw new Error(`Could not fetch ${url}, status: ${res.status}`);   //  св-во status - статус к-ый вернул нам сервер(200, 404, 500 и др)
+        }
+        return await res.json();              //  тут промис трансформируется из JSON в объект
+    };
 
-    new MenuCard(
-        "img/tabs/elite.jpg",
-        "elite",
-        'Меню "Премиум"',
-        'В меню “Премиум” мы используем не только красивый дизайн упаковки, но и качественное исполнение блюд. Красная рыба, морепродукты, фрукты - ресторанное меню без похода в ресторан!',
-        14,
-        '.menu .container',
-        'menu__item'
-    ).renderCard();
+    getResource('http://localhost:3000/menu')
+        .then(data => {                                                        //  обрабатываем промис пришедший от fetch
+            data.forEach(({img, altimg, title, descr, price}) => {             //  применяем деструктуризацию объекта с данными карточек
+                new MenuCard(img, altimg, title, descr, price, '.menu .container').renderCard();   //  рендерим карточки на страницу
+            });
+        });
 
-    new MenuCard(
-        "img/tabs/post.jpg",
-        "post",
-        'Меню "Постное"',
-        'Меню "Постное" - это тщательный подбор ингредиентов: полное отсутствие продуктов животного происхождения, молоко из миндаля, овса, кокоса или гречки, правильное количество белков за счет тофу и импортных вегетарианских стейков.',
-        21,
-        '.menu .container',
-        'menu__item'
-    ).renderCard();
-
+    
 
     //  Forms - принимаем данные пользователя с формы обр связи
         // создаем в корне проекта файл для back-end'a - server.php
@@ -248,7 +239,7 @@ window.addEventListener('DOMContentLoaded', () => {
             bindPostData(item);
         });
 
-        //  ф-ция отвечающая за функционал сервера POST и GET запросы
+        //  ф-ция отвечающая за функционал сервера POST запросы
         const postData = async (url, data) => {
             const res = await fetch(url, {                    //  создается запрос к серверу (асинхронный код) поэтому применяем async/await
                 method: "POST",                               //  теперь переменная res будет ждать ответа (промиса) от fetch и только после этого
@@ -258,7 +249,7 @@ window.addEventListener('DOMContentLoaded', () => {
                 body: data
             });
 
-            return res.json();                        //  тут промис трансформируется из JSON в объект
+            return await res.json();                        //  тут промис трансформируется из JSON в объект
         };
 
         function bindPostData(form) {                     // ф-ция отвечает за постинг данных
@@ -394,5 +385,5 @@ window.addEventListener('DOMContentLoaded', () => {
                 closeModal();                                       //  закрываем мод окно чтобы всё это обновление контента не видел пользователь
             }, 2000);
         }
-        
+
 });
