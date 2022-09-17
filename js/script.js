@@ -245,10 +245,23 @@ window.addEventListener('DOMContentLoaded', () => {
 
         //  применяем ф-цию постинга данных из ФОС ко всем формам с помощью перебора форм
         forms.forEach(item => {
-            postData(item);
+            bindPostData(item);
         });
 
-        function postData(form) {                     // ф-ция отвечает за постинг данных
+        //  ф-ция отвечающая за функционал сервера POST и GET запросы
+        const postData = async (url, data) => {
+            const res = await fetch(url, {                    //  создается запрос к серверу (асинхронный код) поэтому применяем async/await
+                method: "POST",                               //  теперь переменная res будет ждать ответа (промиса) от fetch и только после этого
+                headers: {                                    //  в нее запишется результат запроса
+                    'Content-type': 'application/json'
+                },
+                body: data
+            });
+
+            return res.json();                        //  тут промис трансформируется из JSON в объект
+        };
+
+        function bindPostData(form) {                     // ф-ция отвечает за постинг данных
             form.addEventListener('submit', (e) => {  //  submit срабатывает при отправке ФОС
                 e.preventDefault();                   //  отменяем перезагрузку стр при отправке
     
@@ -274,13 +287,15 @@ window.addEventListener('DOMContentLoaded', () => {
     
                 const formData = new FormData(form);  // Объект FormData позволяет создать набор пар ключ/значение и передать их. На input'ах должен быть атрибут name!!!
 
-                //  создаем объект и помещаем в него данные из formData чтобы потом трансформировать их в JSON
-                const object = {};
-                formData.forEach(function(value, key){
-                    object[key] = value;
-                });
+                const json = JSON.stringify(Object.fromEntries(formData.entries()));  // трнсформируем formData в JSON
 
-                const json = JSON.stringify(object);  //  трансформирует обычный объект в JSON
+                //  создаем объект и помещаем в него данные из formData чтобы потом трансформировать их в JSON
+                // const object = {};
+                // formData.forEach(function(value, key){
+                //     object[key] = value;
+                // });
+
+                // const json = JSON.stringify(object);  //  трансформирует обычный объект в JSON
                 // request.send(json);  //  отправляем к серверу Объект JSON через XMLHttpRequest()
 
                 // request.send(formData);  //  отправляем к серверу Объект FormData через XMLHttpRequest()
@@ -305,23 +320,35 @@ window.addEventListener('DOMContentLoaded', () => {
 
                 
                 // 2. В виде JSON
-                fetch('server.php', {           //  в файле server.php не забудь прописать строку с json_decode
-                    method: "POST",
-                    headers: {
-                        'Content-type': 'application/json'
-                    },
-                    body: json                  //  json - это переменная в к-ой хранятся данный с ФОС в JSON формате(стр.278-283) 
-                })
-                .then(data => data.text())      //  трансформирует JSON в текст чтобы вывести в консоль
-                .then(data => {
-                    console.log(data);
-                    showThanksModal(message.success);
-                }).catch(() => {
-                    showThanksModal(message.failure);
-                }).finally(() => {
-                    form.reset();
-                    statusMessage.remove();
-                });
+                // fetch('server.php', {           //  в файле server.php не забудь прописать строку с json_decode
+                //     method: "POST",
+                //     headers: {
+                //         'Content-type': 'application/json'
+                //     },
+                //     body: json                  //  json - это переменная в к-ой хранятся данный с ФОС в JSON формате(стр.278-283) 
+                // })
+                // .then(data => data.text())      //  трансформирует JSON в текст чтобы вывести в консоль
+                // .then(data => {
+                //     console.log(data);
+                //     showThanksModal(message.success);
+                // }).catch(() => {
+                //     showThanksModal(message.failure);
+                // }).finally(() => {
+                //     form.reset();
+                //     statusMessage.remove();
+                // });
+
+                // исп-ем ф-цию для оптимизации кода по работе с сервером
+                postData('http://localhost:3000/requests', json)        // из ф-ции вернется промис
+                    .then(data => {
+                        console.log(data);
+                        showThanksModal(message.success);
+                    }).catch(() => {
+                        showThanksModal(message.failure);
+                    }).finally(() => {
+                        form.reset();
+                        statusMessage.remove();
+                    });
 
 
                 //--------------------------------------------------------------------------------------------
@@ -367,5 +394,5 @@ window.addEventListener('DOMContentLoaded', () => {
                 closeModal();                                       //  закрываем мод окно чтобы всё это обновление контента не видел пользователь
             }, 2000);
         }
-
+        
 });
