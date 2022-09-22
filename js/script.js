@@ -459,7 +459,7 @@ window.addEventListener('DOMContentLoaded', () => {
 		  current = document.querySelector('#current'),                                      //  цифра текущего слайда
 		  slidesWrapper = document.querySelector('.offer__slider-wrapper'),                  //  главная обертка слайдов - выступает в роли рамки для видимой части слайдов
 		  slidesField = document.querySelector('.offer__slider-inner'),                      //  доп.обертка слайдов в к-ой будут все слайды по горизонтали
-		  slideWidth = +window.getComputedStyle(slidesWrapper).width.replace(/[^0-9]/g,"");  //  ширина обертки (рамка чрз к-ую смотрим на слайды)
+		  slideWidth = +window.getComputedStyle(slidesWrapper).width.replace(/\D/g, "");	 //  ширина обертки (рамка чрз к-ую смотрим на слайды)
 		  //  это computed св-ва CSS т.е. из браузера, вытаскиваем из них width (ширину) и т.к. величина в px, с помощью replace сохр в переменную только цифры, + изменяет строку в число
 	let slideIndex = 1,                                       //  индекс текущего слайда
 		offset = 0;                                           //  отступ, на сколько % сдвинулась доп.обертка со слайдами
@@ -576,5 +576,70 @@ window.addEventListener('DOMContentLoaded', () => {
 	});
 
 
+	//  Calc
 
+	const result = document.querySelector('.calculating__result span');
+	let gender = 'female', 
+		height, weight, age, 
+		ratio = 1.375;
+
+	function getToCalc() {
+		if (!gender || !height || !weight || !age || !ratio) {
+			result.textContent = '____';
+			return;
+		}
+
+		if (gender == 'female') {
+			result.textContent = Math.round((447.6 + (9.2 * weight) + (3.1 * height) - (4.3 * age)) * ratio);
+		} else {
+			result.textContent = Math.round((88.36 + (13.4 * weight) + (4.8 * height) - (5.7 * age)) * ratio);
+		}
+	}
+
+	getToCalc();
+
+	function changeDataParameter(parentSelector, activeClass) {
+		const wrapper = document.querySelectorAll(`${parentSelector} div`);
+		wrapper.forEach(item => {
+			item.addEventListener('click', (e) => {
+
+				wrapper.forEach(item => {
+					item.classList.remove(activeClass);
+				});
+				e.target.classList.add(activeClass);
+
+				if (e.target.getAttribute('data-ratio')) {
+					ratio = +e.target.getAttribute('data-ratio');
+				} else {
+					gender = e.target.getAttribute('id');
+				}
+
+				getToCalc();
+			});
+		});
+	}
+
+	changeDataParameter('#gender', 'calculating__choose-item_active');
+	changeDataParameter('.calculating__choose_big', 'calculating__choose-item_active');
+
+	function changeInputParameter(selector) {
+		document.querySelectorAll(selector).forEach(item => {
+			item.addEventListener('input', (e) => {
+				switch (e.target.getAttribute('id')) {
+					case 'height':
+						height = +e.target.value;
+						break;
+					case 'weight':
+						weight = +e.target.value;
+						break;
+					case 'age':
+						age = +e.target.value;
+						break;
+				}
+			getToCalc();
+			});
+		});
+	}
+
+	changeInputParameter('.calculating__choose_medium input');
 });
