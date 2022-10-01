@@ -1,11 +1,14 @@
-function forms() {
+import {closeModal, openModal} from './modal';
+import {postData} from '../services/services';
+
+function forms(formSelector, modalTimerId) {
 	//  Forms - принимаем данные пользователя с формы обр связи
 		// создаем в корне проекта файл для back-end'a - server.php
 		// исп-ем для отправки объект XMLHttpRequest
 		// пробуем для отправки данных 2 разных формата объект FormData и JSON
 		// для отправки JSON в server.php необходимо добавить: $_POST = json_decode(file_get_contents("php://input"), true);
 
-		const forms = document.querySelectorAll('form');  //  получаем все формы обр связи
+		const forms = document.querySelectorAll(formSelector);  //  получаем все формы обр связи
 
 		const message = {                  // сообщение для информирования пользователя о статусе отправки запроса
 			loading: 'img/form/spinner.svg',              //  исп-ем картинку спиннер для отображения загрузки
@@ -18,18 +21,6 @@ function forms() {
 			bindPostData(item);
 		});
 
-		//  ф-ция отвечающая за функционал сервера POST запросы
-		const postData = async (url, data) => {
-			const res = await fetch(url, {                    //  создается запрос к серверу (асинхронный код) поэтому применяем async/await
-				method: "POST",                               //  теперь переменная res будет ждать ответа (промиса) от fetch и только после этого
-				headers: {                                    //  в нее запишется результат запроса
-					'Content-type': 'application/json'
-				},
-				body: data
-			});
-
-			return await res.json();                        //  тут промис трансформируется из JSON в объект
-		};
 
 		function bindPostData(form) {                     // ф-ция отвечает за постинг данных
 			form.addEventListener('submit', (e) => {  //  submit срабатывает при отправке ФОС
@@ -144,7 +135,7 @@ function forms() {
 			const prevModalDialog = document.querySelector('.modal__dialog');  //  получаем существующее мод окно в переменную
 	
 			prevModalDialog.classList.add('hide');                             //  скрывает предыдущий контент (ФОС, инпуты)
-			openModal();                                                       //  открывает мод окно
+			openModal('.modal', modalTimerId);                                                       //  открывает мод окно
 	
 			const thanksModal = document.createElement('div');                 //  создаем обертку
 			thanksModal.classList.add('modal__dialog');                        //  присваиваем тот же класс что был у ФОС
@@ -161,9 +152,9 @@ function forms() {
 				thanksModal.remove();                               //  удаляем контент с сообщением пользователю
 				prevModalDialog.classList.add('show');              //  показываем предыдущий контент т.е. ФОС с инпуами
 				prevModalDialog.classList.remove('hide');           //  удаляем класс скрытия ФОС примененный на 306 строке
-				closeModal();                                       //  закрываем мод окно чтобы всё это обновление контента не видел пользователь
+				closeModal('.modal');                               //  закрываем мод окно чтобы всё это обновление контента не видел пользователь
 			}, 2000);
 		}
 }
 
-module.exports = forms;
+export default forms;

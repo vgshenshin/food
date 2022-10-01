@@ -1,4 +1,4 @@
-function slider() {
+function slider({container, slide, nextArrow, prevArrow, totalCounter, currentCounter, wrapper, field}) {
 	// simple slider (lesson 92)
 
 	// алгоритм работы по созданию слайдера
@@ -64,13 +64,14 @@ function slider() {
 	// hard slider - carousel (lesson 93)
 	// в html добавить div обертку для слайдов
 
-	const slides = document.querySelectorAll('.offer__slide'),                               //  получаем псевдомассив с контентом слайдов
-		  prev = document.querySelector('.offer__slider-prev'),                              //  стрелочка назад
-		  next = document.querySelector('.offer__slider-next'),                              //  стрелочка вперед
-		  total = document.querySelector('#total'),                                          //  цифра общего кол-ва слайдов
-		  current = document.querySelector('#current'),                                      //  цифра текущего слайда
-		  slidesWrapper = document.querySelector('.offer__slider-wrapper'),                  //  главная обертка слайдов - выступает в роли рамки для видимой части слайдов
-		  slidesField = document.querySelector('.offer__slider-inner'),                      //  доп.обертка слайдов в к-ой будут все слайды по горизонтали
+	const slider = document.querySelector(container),   //  весь слайдер
+		  slides = document.querySelectorAll(slide),                               //  получаем псевдомассив с контентом слайдов
+		  prev = document.querySelector(prevArrow),                              //  стрелочка назад
+		  next = document.querySelector(nextArrow),                              //  стрелочка вперед
+		  total = document.querySelector(totalCounter),                                          //  цифра общего кол-ва слайдов
+		  current = document.querySelector(currentCounter),                                      //  цифра текущего слайда
+		  slidesWrapper = document.querySelector(wrapper),                  //  главная обертка слайдов - выступает в роли рамки для видимой части слайдов
+		  slidesField = document.querySelector(field),                      //  доп.обертка слайдов в к-ой будут все слайды по горизонтали
 		  slideWidth = +window.getComputedStyle(slidesWrapper).width.replace(/\D/g, "");	 //  ширина обертки (рамка чрз к-ую смотрим на слайды)
 		  //  это computed св-ва CSS т.е. из браузера, вытаскиваем из них width (ширину) и т.к. величина в px, с помощью replace сохр в переменную только цифры, + изменяет строку в число
 	let slideIndex = 1,                                       //  индекс текущего слайда
@@ -147,13 +148,13 @@ function slider() {
 
 	// dots for carousel
 
-	const slider = document.querySelector('.offer__slider'),   //  весь слайдер
-		  dotsArr = [];
+	const dotsArr = [];
+
 	slider.style.position = 'relative';
 
 	const dots = document.createElement('ol');
-	dots.classList.add('carousel-indicators');
-	slider.append(dots);
+		  dots.classList.add('carousel-indicators');
+		  slider.append(dots);
 
 	for (let i = 0; i < slides.length; i++) {
 		const dot = document.createElement('li');        //  создаем точки слайдера
@@ -187,4 +188,4 @@ function slider() {
 	});
 }
 
-module.exports = slider;
+export default slider;
