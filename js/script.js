@@ -1,5 +1,12 @@
 "use strict";
 
+// полифилл для ES6 Promise / импор-я с помощью CommonJS
+require('es6-promise').polyfill();
+
+//  полифилл для forEach
+// ES6 Modules import / импор-я с помощью Typescript import
+import 'nodelist-foreach-polyfill';
+
 // импортируем ф-ции из модулей
 //  по стандарту ES6
 import tabs from './modules/tabs';
