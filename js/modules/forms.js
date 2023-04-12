@@ -100,9 +100,8 @@ function forms(formSelector, modalTimerId) {
 				// });
 
 				// исп-ем ф-цию для оптимизации кода по работе с сервером
-				postData('http://localhost:3000/requests', json)        // из ф-ции вернется промис
+				postData('https://script.google.com/macros/s/AKfycbyILGctWH90IsZ99nFYKPETJWnYEVaEWouSs2w2vDu6IDFQu5Ckt_mLQg1dhRHBO3CRjw/exec', formData)        // из ф-ции вернется промис
 					.then(data => {
-						console.log(data);
 						showThanksModal(message.success);
 					}).catch(() => {
 						showThanksModal(message.failure);

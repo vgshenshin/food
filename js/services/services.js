@@ -2,13 +2,10 @@
 const postData = async (url, data) => {
     const res = await fetch(url, {                    //  создается запрос к серверу (асинхронный код) поэтому применяем async/await
         method: "POST",                               //  теперь переменная res будет ждать ответа (промиса) от fetch и только после этого
-        headers: {                                    //  в нее запишется результат запроса
-            'Content-type': 'application/json'
-        },
         body: data
     });
 
-    return await res.json();                        //  тут промис трансформируется из JSON в объект
+    return res;
 };
 
 //  ф-ция отвечающая за функционал сервера GET запросы

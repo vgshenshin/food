@@ -46,7 +46,7 @@ function cards() {
 	}
 
 
-	getResource('https://script.google.com/macros/s/AKfycbybt3cFUux13jTCULikFepK_8rSs3nIwVYqmvE1jc-6uLIHVj330e4X0qAhm0dkNJaEPQ/exec')
+	getResource('https://script.google.com/macros/s/AKfycbyvQ342f8mcYtI_TtJCm9-grGvxIRaejaibQ6oL9LA7FZcZAlstuDq02bO8V2mCS-c-eg/exec')
 		.then(data => {                                                        //  обрабатываем промис пришедший от fetch
 			data.menu.forEach(({img, altimg, title, descr, price}) => {             //  применяем деструктуризацию объекта с данными карточек
 				new MenuCard(img, altimg, title, descr, price, '.menu .container').renderCard();   //  рендерим карточки на страницу
