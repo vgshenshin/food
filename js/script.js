@@ -20,12 +20,14 @@ import {openModal} from './modules/modal';
 
 window.addEventListener('DOMContentLoaded', () => {
 
+	const deadline = '2024-04-31:00:00:00';
+
 	const modalTimerId = setTimeout(() => openModal('.modal', modalTimerId), 50000);  //  через 50сек откр окно
 
 	//  вызываем ф-ции
 	tabs('.tabheader__item', '.tabcontent', '.tabheader__items', 'tabheader__item_active');
 	modal('[data-modal]', '.modal', modalTimerId);
-	timer('.timer', '2022-12-31:00:00:00');
+	timer('.timer', deadline);
 	calc();
 	cards();
 	slider({
